@@ -14,7 +14,10 @@
             </li>
             <li>
                 <label for="goopro_currency">Currency:</label>
-                <input type="text" name="goopro_currency" id="goopro_currency" value="<?php echo $goopro_currency?>" size="20" />
+                <select name="goopro_currency" id="goopro_currency">
+                    <option name="goopro_currency_pound">Pound Sterling (&pound;)</option>
+                    <option name="goopro_currency_euro">Euro (&euro;)</option>
+                </select>
             </li>
             <li>
                 <label for="goopro_countrycode">Country code:</label>
