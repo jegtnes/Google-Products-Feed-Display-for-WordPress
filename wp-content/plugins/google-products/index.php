@@ -18,6 +18,13 @@
     function goopro_admin_init() {  
         add_options_page("Google Products Feed Display: Settings", "Google Products Feed Display", 1, "google_products_feed_display", "goopro_admin");
     }  
+    
+    function admin_register_head() {
+        $siteurl = get_option('siteurl');
+        $url = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/style.css';
+        echo "<link rel='stylesheet' type='text/css' href='$url' />\n";
+    }
 
+    add_action('admin_head', 'admin_register_head');
     add_action('admin_menu', 'goopro_admin_init');  
 ?>
