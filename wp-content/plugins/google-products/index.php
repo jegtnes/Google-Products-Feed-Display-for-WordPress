@@ -6,9 +6,12 @@
     Author: Alexander Jegtnes 
     Version: 0.1
     Author URI: http://jegtnes.co.uk
+    --------------------------------
+    Thanks to Christian Lupu for this tutorial, which is what most of the WP functionality is inspired by.
+    http://net.tutsplus.com/tutorials/wordpress/creating-a-custom-wordpress-plugin-from-scratch/
     */  
 
-    function oscimp_admin() {  
+    function goopro_admin() {  
         include('goopro_admin.php');  
     }  
 
