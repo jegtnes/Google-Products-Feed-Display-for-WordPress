@@ -77,5 +77,5 @@ else {
         <input type="submit" name="Submit" value="<?php _e('Update Options', 'oscimp_trdom' ) ?>" />  
         </p>
     </form>
-    
+    <?php echo goopro_getproducts();?>
 </div>

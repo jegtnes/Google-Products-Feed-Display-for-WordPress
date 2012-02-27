@@ -24,6 +24,42 @@
         $url = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/style.css';
         echo "<link rel='stylesheet' type='text/css' href='$url' />\n";
     }
+    
+    function goopro_getxml() {
+        $ret = array();
+        //gets the products
+        $products = new SimpleXMLElement(get_option(goopro_feedurl), null, true);
+        foreach ($products as $product) {
+            //creates a 2-level nested array with each product inside an associative array
+            $ret[] = array("title" => $product->title, "link" => $product->link, "image_link" => $product->image_link, "price" => $product->price);
+        }
+        
+        return $ret;
+   }
+    
+    function goopro_getproducts() {
+        echo "<div class=\"goopro_display\">";
+        
+        foreach(goopro_getxml() as $product) {
+            echo(   "<h3><a href=\"" . 
+                    $product['link'] .
+                    "\">" .
+                    $product['title'] . 
+                    "</a></h3>" .
+                    "<img alt=\"" . 
+                    $product['title'] .
+                    "\" src=\"" . 
+                    $product['image_link'] .
+                    "\">" .
+                    "<h4><a href=\"" . 
+                    $product['link'] .
+                    "\">" .
+                    $product['price'] .
+                    "</a></h4>"
+                    );
+        }
+        echo "</div>";
+    }
 
     add_action('admin_head', 'admin_register_head');
     add_action('admin_menu', 'goopro_admin_init');  
