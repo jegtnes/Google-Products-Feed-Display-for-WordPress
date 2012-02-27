@@ -1,4 +1,11 @@
 .goopro_form label {
     min-width: 150px;
+    display: inline-block;
+}
+
+.goopro_form input,
+.goopro_form select {
+    width: 200px;
+    moz-box-sizing: border-box;
     display: inline-block
 }
