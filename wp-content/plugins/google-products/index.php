@@ -25,6 +25,18 @@
         echo "<link rel='stylesheet' type='text/css' href='$url' />\n";
     }
     
+    function goopro_convertxml($targeturl) {
+        $count = 0;
+        $sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
+        foreach($sourceurl->channel->item as $product) {
+            $count++;
+            if ($count < get_option("goopro_number")) {
+                //TODO: Make stuff happen
+            }
+            
+        }
+    }
+    
     function goopro_getxml() {
         $ret = array();
         //gets the products
@@ -41,7 +53,7 @@
         echo "<div class=\"goopro_display\">";
         
         foreach(goopro_getxml() as $product) {
-            echo(   "<h3><a href=\"" . 
+          /*  echo(   "<h3><a href=\"" . 
                     $product['link'] .
                     "\">" .
                     $product['title'] . 
@@ -56,7 +68,8 @@
                     "\">" .
                     $product['price'] .
                     "</a></h4>"
-                    );
+                    ); */
+            goopro_convertxml("");
         }
         echo "</div>";
     }
