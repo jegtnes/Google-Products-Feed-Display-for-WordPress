@@ -38,22 +38,23 @@
         $sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
         
         foreach($sourceurl->channel->item as $product) {
-            
-            if ($count >= get_option('goopro_number')) {
-                break("breaking out!");
-            }
-            
-            else {
-                if (stristr($product->title,$brand) == true) {
+              
+             if ($count < get_option('goopro_number')) {
+                 if (stristr($product->title,$brand) == true) {
                     $count++;
                     echo ("<p>$count products so far. <br />" . $product->title . ", " . $product->description . ", " . $product->link . "<br />" . var_dump($product) . "</p>");
                 }
             }
+            
+            else {
+               break;
+            } 
         }
         
         $time_end = microtime(true);
         $execution_time = ($time_end - $time_start);
         echo '<b>Total Execution Time:</b> '.$execution_time.' seconds'; //execution time of the script
+        update_option('goopro_lastupdated', time());
     }
     
     function goopro_getxml() {

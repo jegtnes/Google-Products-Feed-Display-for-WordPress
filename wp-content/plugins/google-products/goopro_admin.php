@@ -1,4 +1,6 @@
 <?php
+$goopro_lastupdated = get_option("goopro_lastupdated");
+
 if($_POST['goopro_hidden'] == 'Y') {  
     
     $goopro_brandname = $_POST['goopro_brandname'];  
@@ -15,6 +17,7 @@ if($_POST['goopro_hidden'] == 'Y') {
     
     $goopro_countrycode = $_POST['goopro_countrycode'];  
     update_option('goopro_countrycode', $goopro_countrycode);
+    
     ?>
     <div class="updated">
         <p>
@@ -36,6 +39,8 @@ else {
 
 <div class="wrap">
     <div id="icon-tools" class="icon32"></div><h2>Google Products Feed Display Options</h2>
+    
+    <?php if ($goopro_lastupdated) echo "<h4>Master feed last updated at " . date("G:i:s jS F Y",$goopro_lastupdated) . "</h4>"?>
     <form name="goopro_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>" class="goopro_form">
         <input type="hidden" name="goopro_hidden" value="Y">
         <h4>General settings</h4>
@@ -74,7 +79,7 @@ else {
         </ul>
         
         <p class="submit">  
-        <input type="submit" name="Submit" value="<?php _e('Update Options', 'oscimp_trdom' ) ?>" />  
+        <input type="submit" name="Submit" value="<?php _e('Update Options', 'goopro_upopt' ) ?>" />  
         </p>
     </form>
     <?php echo goopro_getproducts();?>
