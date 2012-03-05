@@ -25,6 +25,33 @@
         echo "<link rel='stylesheet' type='text/css' href='$url' />\n";
     }
     
+    function goopro_install() {
+        global $wpdb;
+        
+        //sets the table name with the appropriate prefix
+        $table_name = $wpdb->prefix . "goopro";
+        
+        //if the table doesn't already exist, create it
+        if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            
+            //the pure SQL
+            $sql = "CREATE TABLE $table_name (
+            gp_id mediumint(9) NOT NULL AUTO_INCREMENT,
+            title varchar(50) NOT NULL,
+            description varchar(500),
+            link varchar(500) NOT NULL,
+            image_link varchar(500) NOT NULL,
+            price decimal(6,2) NOT NULL,
+            PRIMARY KEY  id (gp_id)
+            )";  
+        }
+        
+        
+        
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+    
     function goopro_convertxml($targeturl) {
         //sets the maximum execution time to 100 seconds (XML files can take a while, yo.)
         set_time_limit(100);
@@ -42,7 +69,11 @@
              if ($count < get_option('goopro_number')) {
                  if (stristr($product->title,$brand) == true) {
                     $count++;
-                    echo ("<p>$count products so far. <br />" . $product->title . ", " . $product->description . ", " . $product->link . "<br />" . var_dump($product) . "</p>");
+                    
+                    //Uses the namespace linked in the XML document
+                    $namespaces = $product->getNameSpaces(true);
+                    $g = $product->children($namespaces['g']);
+                    echo ("<p>$count: " . $product->title . ", " . $product->description . ", " . $product->link . ", " . (float) $g->price . ", " . (String) $g->image_link . "<br />" . var_dump($product) . "<br />" . var_dump($g) . "</p>");
                 }
             }
             
@@ -93,7 +124,22 @@
         }
         echo "</div>";
     }
-
+    
+    function test_add() {
+        global $wpdb;
+        $sql = "INSERT INTO wp_goopro VALUES (
+            0,
+            'testTitle',
+            'testDescription',
+            'testLink',
+            'testImageLink',
+            55.55
+            )";  
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+    
+    register_activation_hook(__FILE__,'goopro_install');
     add_action('admin_head', 'admin_register_head');
     add_action('admin_menu', 'goopro_admin_init');  
 ?>

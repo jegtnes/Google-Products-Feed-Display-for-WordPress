@@ -82,5 +82,7 @@ else {
         <input type="submit" name="Submit" value="<?php _e('Update Options', 'goopro_upopt' ) ?>" />  
         </p>
     </form>
-    <?php echo goopro_getproducts();?>
+    <?php 
+    test_add();
+    echo goopro_getproducts();?>
 </div>
