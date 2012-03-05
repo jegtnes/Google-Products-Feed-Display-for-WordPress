@@ -10,7 +10,7 @@
     Thanks to Christian Lupu for this tutorial, which is what most of the WP functionality is inspired by.
     http://net.tutsplus.com/tutorials/wordpress/creating-a-custom-wordpress-plugin-from-scratch/
     */  
-
+    
     function goopro_admin() {  
         include('goopro_admin.php');  
     }  
@@ -26,15 +26,34 @@
     }
     
     function goopro_convertxml($targeturl) {
+        //sets the maximum execution time to 100 seconds (XML files can take a while, yo.)
+        set_time_limit(100);
+        
+        //starts tracking time - for debugging purposes
+        $time_start = microtime(true);
+        
+        $brand = (string) get_option("goopro_brandname");
+        
         $count = 0;
         $sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
+        
         foreach($sourceurl->channel->item as $product) {
-            $count++;
-            if ($count < get_option("goopro_number")) {
-                //TODO: Make stuff happen
+            
+            if ($count >= get_option('goopro_number')) {
+                break("breaking out!");
             }
             
+            else {
+                if (stristr($product->title,$brand) == true) {
+                    $count++;
+                    echo ("<p>$count products so far. <br />" . $product->title . ", " . $product->description . ", " . $product->link . "<br />" . var_dump($product) . "</p>");
+                }
+            }
         }
+        
+        $time_end = microtime(true);
+        $execution_time = ($time_end - $time_start);
+        echo '<b>Total Execution Time:</b> '.$execution_time.' seconds'; //execution time of the script
     }
     
     function goopro_getxml() {
