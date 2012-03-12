@@ -1,5 +1,6 @@
 <?php
     //adapted from http://abhirama.wordpress.com/2010/06/07/wordpress-plugin-and-widget-tutorial - thanks!
+    //TODO: Comment / refactor this code
     class GooproWidget extends WP_Widget {
         function GooproWidget() {
             parent::WP_Widget( false, $name = 'Google Products Widget' );
@@ -15,7 +16,10 @@
             ?>
 
             <div class="goopro_widget">
-                <p>This is where products are meant to appear.</p>
+                <p>This is where 
+                    <?php echo get_option("goopro_number");?> 
+                    <?php echo get_option("goopro_brandname");?> products are meant to appear.
+                </p>
             </div>
 
             <?php

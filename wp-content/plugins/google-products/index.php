@@ -15,18 +15,21 @@
         include('goopro_admin.php');  
     }  
 
+    //includes the widget code
     include_once('GooproWidget.php');
     
     function goopro_admin_init() {  
         add_options_page("Google Products Feed Display: Settings", "Google Products Feed Display", 1, "google_products_feed_display", "goopro_admin");
     }  
     
+    //adds styling to the admin page
     function admin_register_head() {
         $siteurl = get_option('siteurl');
         $url = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/style.css';
         echo "<link rel='stylesheet' type='text/css' href='$url' />\n";
     }
     
+    //this will be called on installation of the plugin
     function goopro_install() {
         global $wpdb;
         
@@ -53,7 +56,6 @@
         dbDelta($sql);
     }
     
-    //TODO: Reverse the results
     function goopro_updateProducts() {
         //sets the maximum execution time to 120 seconds (Huge XML files can take a while, yo.)
         set_time_limit(120);
@@ -63,10 +65,10 @@
         $count = 0;
         $sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
         
+        //reverses the array
         foreach ($sourceurl->channel->item as $item) {
             $source[]=$item;
         }
-        
         $source = array_reverse($source);
         
         //database magic
@@ -128,6 +130,7 @@
         }
     }
     
+    //TODO: Make this function actually work
     function goopro_getproducts() {
         echo "<div class=\"goopro_display\">";
         echo "</div>";
