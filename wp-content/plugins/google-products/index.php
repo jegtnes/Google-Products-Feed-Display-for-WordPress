@@ -51,8 +51,8 @@
         dbDelta($sql);
     }
     
-    //TODO: Reverse the results, remove old results
-    function goopro_convertxml() {
+    //TODO: Reverse the results
+    function goopro_updateProducts() {
         //sets the maximum execution time to 120 seconds (Huge XML files can take a while, yo.)
         set_time_limit(120);
         
@@ -68,7 +68,7 @@
         
         //checks that the XML file is reachable
         if (!empty($sourceurl)) {
-            
+            echo count($sourceurl->channel->item);
             foreach($sourceurl->channel->item as $product) {
 
                 if ($count < get_option('goopro_number')) {
@@ -107,7 +107,6 @@
                 } 
             }
 
-            
             //database magic here, this executes the SQL query and gets rid of old results
             $wpdb->query("TRUNCATE TABLE `$table_name`;");
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

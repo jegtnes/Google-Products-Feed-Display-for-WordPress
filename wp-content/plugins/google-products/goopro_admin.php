@@ -17,7 +17,7 @@ if($_POST['goopro_hidden'] == 'Y') {
     $goopro_countrycode = $_POST['goopro_countrycode'];  
     update_option('goopro_countrycode', $goopro_countrycode);
     
-    goopro_convertxml();
+    goopro_updateProducts();
     $goopro_lastupdated = get_option("goopro_lastupdated");
     
     ?>
@@ -32,7 +32,7 @@ if($_POST['goopro_hidden'] == 'Y') {
 
 else if($_POST['goopro_update_hidden'] == 'Y') {
     
-    goopro_convertxml();
+    goopro_updateProducts();
     
     $goopro_brandname = get_option('goopro_brandname');  
     $goopro_number = get_option('goopro_number');  
