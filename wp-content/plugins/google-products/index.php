@@ -37,7 +37,7 @@
             //the pure SQL
             $sql = "CREATE TABLE $table_name (
             gp_id mediumint(9) NOT NULL AUTO_INCREMENT,
-            title varchar(50) NOT NULL,
+            title varchar(200) NOT NULL,
             description varchar(500),
             link varchar(500) NOT NULL,
             image_link varchar(500) NOT NULL,
@@ -45,9 +45,7 @@
             PRIMARY KEY  id (gp_id)
             )";  
         }
-        
-        
-        
+
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }
@@ -65,7 +63,7 @@
         $sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
         
         foreach($sourceurl->channel->item as $product) {
-              
+          
              if ($count < get_option('goopro_number')) {
                  if (stristr($product->title,$brand) == true) {
                     $count++;
@@ -73,6 +71,27 @@
                     //Uses the namespace linked in the XML document
                     $namespaces = $product->getNameSpaces(true);
                     $g = $product->children($namespaces['g']);
+                    
+                    //sets all vars and safely escapes / casts them.
+                    $prod_title = (String) mysql_real_escape_string($product->title);
+                    $prod_desc = (String) mysql_real_escape_string($product->description);
+                    $prod_link = (String) mysql_real_escape_string($product->link);
+                    $prod_price = (float) mysql_real_escape_string($g->price);
+                    $prod_imagelink = (String) mysql_real_escape_string($g->image_link);
+                    
+                    //database magic happens here
+                    global $wpdb;
+                    $sql = "INSERT INTO wp_goopro VALUES (
+                    'NULL',
+                    '$prod_title',
+                    '$prod_desc',
+                    '$prod_link',
+                    '$prod_imagelink',
+                    $prod_price
+                    )";
+                    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+                    dbDelta($sql);
+                    
                     echo ("<p>$count: " . $product->title . ", " . $product->description . ", " . $product->link . ", " . (float) $g->price . ", " . (String) $g->image_link . "<br />" . var_dump($product) . "<br />" . var_dump($g) . "</p>");
                 }
             }

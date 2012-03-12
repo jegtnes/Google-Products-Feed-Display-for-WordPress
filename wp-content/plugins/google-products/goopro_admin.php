@@ -83,6 +83,5 @@ else {
         </p>
     </form>
     <?php 
-    test_add();
     echo goopro_getproducts();?>
 </div>
