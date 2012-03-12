@@ -61,15 +61,20 @@
         $count = 0;
         $sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
         
+        foreach ($sourceurl->channel->item as $item) {
+            $source[]=$item;
+        }
+        
+        $source = array_reverse($source);
+        
         //database magic
         $sql = "";
         global $wpdb;
         $table_name = $wpdb->prefix . "goopro";
         
         //checks that the XML file is reachable
-        if (!empty($sourceurl)) {
-            echo count($sourceurl->channel->item);
-            foreach($sourceurl->channel->item as $product) {
+        if (!empty($source)) {
+            foreach($source as $product) {
 
                 if ($count < get_option('goopro_number')) {
 
@@ -115,8 +120,9 @@
             //sets the time the XML feed was last updated.
             update_option('goopro_lastupdated', time());
             }
-        else {
             
+        else {
+            echo "Can't parse XML file!";
         }
     }
     
