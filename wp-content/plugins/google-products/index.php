@@ -15,6 +15,8 @@
         include('goopro_admin.php');  
     }  
 
+    include_once('GooproWidget.php');
+    
     function goopro_admin_init() {  
         add_options_page("Google Products Feed Display: Settings", "Google Products Feed Display", 1, "google_products_feed_display", "goopro_admin");
     }  
@@ -130,6 +132,7 @@
         echo "<div class=\"goopro_display\">";
         echo "</div>";
     }
+    
     
     register_activation_hook(__FILE__,'goopro_install');
     add_action('admin_head', 'admin_register_head');
