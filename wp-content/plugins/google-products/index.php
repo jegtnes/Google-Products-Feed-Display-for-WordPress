@@ -46,11 +46,13 @@
             )";  
         }
 
+        //execute the SQL
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }
     
-    function goopro_convertxml($targeturl) {
+    //TODO: Reverse the results, remove old results
+    function goopro_convertxml() {
         //sets the maximum execution time to 120 seconds (Huge XML files can take a while, yo.)
         set_time_limit(120);
         
@@ -59,101 +61,69 @@
         $count = 0;
         $sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
         
+        //database magic
         $sql = "";
         global $wpdb;
-        foreach($sourceurl->channel->item as $product) {
-          
-             if ($count < get_option('goopro_number')) {
-                 
-                 //If the current product matches the brand we've specified
-                 if (stristr($product->title,$brand) == true) {
-                    $count++;
-                    
-                    //Uses the namespace linked in the XML document
-                    $namespaces = $product->getNameSpaces(true);
-                    $g = $product->children($namespaces['g']);
-                                      
-                    //sets all vars and safely escapes / casts them.
-                    $prod_title = (String) mysql_real_escape_string($product->title);
-                    $prod_desc = (String) mysql_real_escape_string($product->description);
-                    $prod_link = (String) mysql_real_escape_string($product->link);
-                    $prod_price = (float) mysql_real_escape_string($g->price);
-                    $prod_imagelink = (String) mysql_real_escape_string($g->image_link);
-                    
-                    //database magic here, this prepares the SQL query
-                    $sql .= "INSERT INTO wp_goopro VALUES (
-                    'NULL',
-                    '$prod_title',
-                    '$prod_desc',
-                    '$prod_link',
-                    '$prod_imagelink',
-                    $prod_price
-                    );";
-                 }
-            }
+        $table_name = $wpdb->prefix . "goopro";
+        
+        //checks that the XML file is reachable
+        if (!empty($sourceurl)) {
             
-            else {
-               break;
-            } 
+            foreach($sourceurl->channel->item as $product) {
+
+                if ($count < get_option('goopro_number')) {
+
+                    //If the current product matches the brand we've specified
+                    //(I'm sure there's a much faster way to do this than these five million nested loops and if statements)
+                    //(but I can't quite figure out how at the moment)
+                    if (stristr($product->title,$brand) == true) {
+                        $count++;
+
+                        //Uses the namespace linked in the XML document
+                        $namespaces = $product->getNameSpaces(true);
+                        $g = $product->children($namespaces['g']);
+
+                        //sets all vars and safely escapes / casts them.
+                        $prod_title = (String) mysql_real_escape_string($product->title);
+                        $prod_desc = (String) mysql_real_escape_string($product->description);
+                        $prod_link = (String) mysql_real_escape_string($product->link);
+                        $prod_price = (float) mysql_real_escape_string($g->price);
+                        $prod_imagelink = (String) mysql_real_escape_string($g->image_link);
+
+                        //database magic here, this prepares the SQL query
+                        $sql .= "INSERT INTO wp_goopro VALUES (
+                        'NULL',
+                        '$prod_title',
+                        '$prod_desc',
+                        '$prod_link',
+                        '$prod_imagelink',
+                        $prod_price
+                        );";
+                    }
+                }
+
+                else {
+                break;
+                } 
+            }
+
+            
+            //database magic here, this executes the SQL query and gets rid of old results
+            $wpdb->query("TRUNCATE TABLE `$table_name`;");
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            dbDelta($sql);
+
+            //sets the time the XML feed was last updated.
+            update_option('goopro_lastupdated', time());
+            }
+        else {
+            
         }
-        
-        //database magic here, this executes the SQL query
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
-        
-        //sets the time the XML feed was last updated.
-        update_option('goopro_lastupdated', time());
     }
-    
-    function goopro_getxml() {
-        $ret = array();
-        //gets the products
-        $products = new SimpleXMLElement(get_option(goopro_feedurl), null, true);
-        foreach ($products as $product) {
-            //creates a 2-level nested array with each product inside an associative array
-            $ret[] = array("title" => $product->title, "link" => $product->link, "image_link" => $product->image_link, "price" => $product->price);
-        }
-        
-        return $ret;
-   }
     
     function goopro_getproducts() {
         echo "<div class=\"goopro_display\">";
-        
-        foreach(goopro_getxml() as $product) {
-          /*  echo(   "<h3><a href=\"" . 
-                    $product['link'] .
-                    "\">" .
-                    $product['title'] . 
-                    "</a></h3>" .
-                    "<img alt=\"" . 
-                    $product['title'] .
-                    "\" src=\"" . 
-                    $product['image_link'] .
-                    "\">" .
-                    "<h4><a href=\"" . 
-                    $product['link'] .
-                    "\">" .
-                    $product['price'] .
-                    "</a></h4>"
-                    ); */
-            goopro_convertxml("");
-        }
         echo "</div>";
-    }
-    
-    function test_add() {
-        global $wpdb;
-        $sql = "INSERT INTO wp_goopro VALUES (
-            0,
-            'testTitle',
-            'testDescription',
-            'testLink',
-            'testImageLink',
-            55.55
-            )";  
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
     }
     
     register_activation_hook(__FILE__,'goopro_install');

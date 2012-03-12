@@ -1,5 +1,4 @@
 <?php
-$goopro_lastupdated = get_option("goopro_lastupdated");
 
 if($_POST['goopro_hidden'] == 'Y') {  
     
@@ -18,14 +17,37 @@ if($_POST['goopro_hidden'] == 'Y') {
     $goopro_countrycode = $_POST['goopro_countrycode'];  
     update_option('goopro_countrycode', $goopro_countrycode);
     
+    goopro_convertxml();
+    $goopro_lastupdated = get_option("goopro_lastupdated");
+    
     ?>
     <div class="updated">
         <p>
-            <strong><?php _e('Options saved.' ); ?></strong>
+            <strong><?php _e('Options saved &amp; feed updated.' ); ?></strong>
         </p>
     </div>
 
     <?php 
+}
+
+else if($_POST['goopro_update_hidden'] == 'Y') {
+    
+    goopro_convertxml();
+    
+    $goopro_brandname = get_option('goopro_brandname');  
+    $goopro_number = get_option('goopro_number');  
+    $goopro_currency = get_option('goopro_currency');  
+    $goopro_feedurl = get_option('goopro_feedurl');  
+    $goopro_countrycode = get_option('goopro_countrycode');  
+    $goopro_lastupdated = get_option("goopro_lastupdated");
+    ?>
+    <div class="updated">
+        <p>
+            <strong><?php _e('Feed updated.' ); ?></strong>
+        </p>
+    </div>
+    <?php
+
 }
 
 else {
@@ -34,12 +56,19 @@ else {
     $goopro_currency = get_option('goopro_currency');  
     $goopro_feedurl = get_option('goopro_feedurl');  
     $goopro_countrycode = get_option('goopro_countrycode');  
+    $goopro_lastupdated = get_option("goopro_lastupdated");
 } 
 ?>
 
 <div class="wrap">
-    <div id="icon-tools" class="icon32"></div><h2>Google Products Feed Display Options</h2>
     
+    <div id="icon-tools" class="icon32"></div><h2>Google Products Feed Display Options</h2>
+    <form name="goopro_updateform" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>" class="goopro_form">
+        <input type="hidden" name="goopro_update_hidden" value="Y">
+        <p class="submit">  
+        <input type="submit" name="Submit" value="<?php _e('Update Feed', 'goopro_upopt' ) ?>" />  
+        </p>
+    </form>
     <?php if ($goopro_lastupdated) echo "<h4>Master feed last updated at " . date("G:i:s jS F Y",$goopro_lastupdated) . "</h4>"?>
     <form name="goopro_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>" class="goopro_form">
         <input type="hidden" name="goopro_hidden" value="Y">
@@ -79,9 +108,7 @@ else {
         </ul>
         
         <p class="submit">  
-        <input type="submit" name="Submit" value="<?php _e('Update Options', 'goopro_upopt' ) ?>" />  
+        <input type="submit" name="Submit" value="<?php _e('Update Options &amp; Feed', 'goopro_upopt' ) ?>" />  
         </p>
     </form>
-    <?php 
-    echo goopro_getproducts();?>
 </div>
