@@ -179,8 +179,8 @@
 	}
 	
 	function goopro_create_page() {
-		//Adds a new page, adapted from
-		//http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616
+		//Adds a new page
+		//adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616 - thanks, mr. Crossen!
 		
 		$the_page_title = 'Latest Products';
 		$the_page_name = 'latest-products';
@@ -228,6 +228,7 @@
 	}
 	
 	//sets up the parser to see whether the products page is accessed
+	//adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616 - thanks, mr. Crossen!
 	function goopro_page_query_parser($q) {
 		$the_page_name = get_option( "goopro_page_name" );
 		$the_page_id = get_option( "goopro_page_id" );
@@ -252,6 +253,7 @@
 	}
 	
 	//this is what actually changes the page
+	//adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616 - thanks, mr. Crossen!
 	function goopro_page_filter($posts) {
 		global $wp_query;
 
@@ -266,12 +268,15 @@
 		return $posts;
 	}
 	
+	//removes the page
+	//adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616 - thanks, mr. Crossen!
 	function goopro_remove_page() {
+		
     //the id of our page
     $the_page_id = get_option("goopro_page_id");
 		
     if($the_page_id) {
-			wp_delete_post( $the_page_id ); // this will trash, not delete
+			wp_delete_post($the_page_id); // this will trash, not delete
     }
 
     delete_option("goopro_page_title");
