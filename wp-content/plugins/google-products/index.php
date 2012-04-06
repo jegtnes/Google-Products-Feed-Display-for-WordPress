@@ -57,76 +57,77 @@
     }
     
     function goopro_updateProducts() {
-        //sets the maximum execution time to 120 seconds (Huge XML files can take a while, yo.)
-        set_time_limit(120);
+        //requires some WordPress database magic stuff
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         
-        $brand = (string) get_option("goopro_brandname");
-        
-        $count = 0;
-        $sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
-        
-        //reverses the array
-        foreach ($sourceurl->channel->item as $item) {
-            $source[]=$item;
-        }
-        $source = array_reverse($source);
-        
-        //database magic
-        $sql = "";
         global $wpdb;
         $table_name = $wpdb->prefix . "goopro";
         
+        //sets the maximum execution time to 120 seconds (Huge XML files can take a while, yo.)
+        set_time_limit(120);
+        
+        //the current brand name we're working with
+        $brand = (string) get_option("goopro_brandname");
+               
+        //sets the table name with the appropriate prefix
+        $table_name = $wpdb->prefix . "goopro";
+        
+        //loads the source
+        $sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
+        
+        //prepares the start of the SQL statement we're working with
+        $sql = "INSERT INTO $table_name VALUES ";
+        
         //checks that the XML file is reachable
-        if (!empty($source)) {
-            foreach($source as $product) {
+        if (!empty($sourceurl)) {
+            
+            //loops through the XML file
+            foreach($sourceurl->channel->item as $product) {
+                
+                //if the current looped item is the right brand, add it
+                if (stristr($product->title,$brand) == true) {
 
-                if ($count < get_option('goopro_number')) {
+                    //Uses the namespace linked in the XML document
+                    $namespaces = $product->getNameSpaces(true);
+                    $g = $product->children($namespaces['g']);
 
-                    //If the current product matches the brand we've specified
-                    //(I'm sure there's a much faster way to do this than these five million nested loops and if statements)
-                    //(but I can't quite figure out how at the moment)
-                    if (stristr($product->title,$brand) == true) {
-                        $count++;
+                    //sets all vars and safely escapes / casts them.
+                    $prod_title = (String) mysql_real_escape_string($product->title);
+                    $prod_desc = (String) mysql_real_escape_string($product->description);
+                    $prod_link = (String) mysql_real_escape_string($product->link);
+                    $prod_price = (float) mysql_real_escape_string($g->price);
+                    $prod_imagelink = (String) mysql_real_escape_string($g->image_link);
 
-                        //Uses the namespace linked in the XML document
-                        $namespaces = $product->getNameSpaces(true);
-                        $g = $product->children($namespaces['g']);
-
-                        //sets all vars and safely escapes / casts them.
-                        $prod_title = (String) mysql_real_escape_string($product->title);
-                        $prod_desc = (String) mysql_real_escape_string($product->description);
-                        $prod_link = (String) mysql_real_escape_string($product->link);
-                        $prod_price = (float) mysql_real_escape_string($g->price);
-                        $prod_imagelink = (String) mysql_real_escape_string($g->image_link);
-
-                        //database magic here, this prepares the SQL query
-                        $sql .= "INSERT INTO wp_goopro VALUES (
-                        'NULL',
-                        '$prod_title',
-                        '$prod_desc',
-                        '$prod_link',
-                        '$prod_imagelink',
-                        $prod_price
-                        );";
-                    }
+                    //database magic here, this adds to the SQL query
+                    $sql .= "(
+                    'NULL',
+                    '$prod_title',
+                    '$prod_desc',
+                    '$prod_link',
+                    '$prod_imagelink',
+                    $prod_price
+                    ), ";
                 }
-
-                else {
-                break;
-                } 
+                
             }
-
-            //database magic here, this executes the SQL query and gets rid of old results
+            
+            //replaces the last comma of $sql with a semicolon
+            //so we get a valid SQL query
+            $sql = substr($sql,0,-2) . ";";
+            
+            //gets rid of old results
+            //can't update current results and insert new ones - as brand names can change
             $wpdb->query("TRUNCATE TABLE `$table_name`;");
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            
+            //Execute the SQL query
             dbDelta($sql);
 
             //sets the time the XML feed was last updated.
             update_option('goopro_lastupdated', time());
-            }
+        }
             
         else {
-            echo "Can't parse XML file!";
+            die("Can't parse XML file!");
         }
     }
     
@@ -135,7 +136,6 @@
         echo "<div class=\"goopro_display\">";
         echo "</div>";
     }
-    
     
     register_activation_hook(__FILE__,'goopro_install');
     add_action('admin_head', 'admin_register_head');
