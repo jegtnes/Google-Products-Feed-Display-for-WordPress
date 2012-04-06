@@ -23,19 +23,19 @@
 			//if an invalid number is given, default to 5
 			$num = $instance['num'];
 			if ($num <= 0) {
-					$num = 5;
+				$num = 5;
 			}
 
 			echo $before_widget;
 			if ($title) {
-					echo $before_title . $title . $after_title;
+				echo $before_title . $title . $after_title;
 			}
 			?>
 
 			<div class="goopro_widget">
-					<?php
-							goopro_getproducts($num);
-					?>
+				<?php
+						goopro_getproducts($num);
+				?>
 			</div>
 
 			<?php
@@ -55,15 +55,15 @@
 			?>
 
 			<p>
-					<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?>
-					<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" />
-					</label>
+				<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?>
+				<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" />
+				</label>
 			</p>
 
 			<p>
-					<label for="<?php echo $this->get_field_id( 'num' ); ?>"><?php _e( 'Number of products to show:' ); ?>
-					<input class="widefat" id="<?php echo $this->get_field_id( 'num' ); ?>" name="<?php echo $this->get_field_name( 'num' ); ?>" type="text" value="<?php echo $num; ?>" />
-					</label>
+				<label for="<?php echo $this->get_field_id( 'num' ); ?>"><?php _e( 'Number of products to show:' ); ?>
+				<input class="widefat" id="<?php echo $this->get_field_id( 'num' ); ?>" name="<?php echo $this->get_field_name( 'num' ); ?>" type="text" value="<?php echo $num; ?>" />
+				</label>
 			</p>
 			<?php
 		}
@@ -72,6 +72,6 @@
 	add_action( 'widgets_init', 'goopro_widget_init' );
 
 	function goopro_widget_init() {
-			register_widget( 'GooproWidget' );
+		register_widget( 'GooproWidget' );
 	}
 ?>

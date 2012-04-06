@@ -57,78 +57,78 @@
 	}
 
 	function goopro_updateProducts() {
-			//requires some WordPress database magic stuff
-			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		//requires some WordPress database magic stuff
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-			global $wpdb;
-			$table_name = $wpdb->prefix . "goopro";
+		global $wpdb;
+		$table_name = $wpdb->prefix . "goopro";
 
-			//sets the maximum execution time to 120 seconds (Huge XML files can take a while, yo.)
-			set_time_limit(120);
+		//sets the maximum execution time to 120 seconds (Huge XML files can take a while, yo.)
+		set_time_limit(120);
 
-			//the current brand name we're working with
-			$brand = (string) get_option("goopro_brandname");
+		//the current brand name we're working with
+		$brand = (string) get_option("goopro_brandname");
 
-			//sets the table name with the appropriate prefix
-			$table_name = $wpdb->prefix . "goopro";
+		//sets the table name with the appropriate prefix
+		$table_name = $wpdb->prefix . "goopro";
 
-			//loads the source
-			$sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
+		//loads the source
+		$sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
 
-			//prepares the start of the SQL statement we're working with
-			$sql = "INSERT INTO $table_name VALUES ";
+		//prepares the start of the SQL statement we're working with
+		$sql = "INSERT INTO $table_name VALUES ";
 
-			//checks that the XML file is reachable
-			if (!empty($sourceurl)) {
+		//checks that the XML file is reachable
+		if (!empty($sourceurl)) {
 
-					//loops through the XML file
-					foreach($sourceurl->channel->item as $product) {
+			//loops through the XML file
+			foreach($sourceurl->channel->item as $product) {
 
-							//if the current looped item is the right brand, add it
-							if (stristr($product->title,$brand) == true) {
+				//if the current looped item is the right brand, add it
+				if (stristr($product->title,$brand) == true) {
 
-									//Uses the namespace linked in the XML document
-									$namespaces = $product->getNameSpaces(true);
-									$g = $product->children($namespaces['g']);
+					//Uses the namespace linked in the XML document
+					$namespaces = $product->getNameSpaces(true);
+					$g = $product->children($namespaces['g']);
 
-									//sets all vars and safely escapes / casts them.
-									$prod_title = (String) mysql_real_escape_string($product->title);
-									$prod_desc = (String) mysql_real_escape_string($product->description);
-									$prod_link = (String) mysql_real_escape_string($product->link);
-									$prod_price = (float) mysql_real_escape_string($g->price);
-									$prod_imagelink = (String) mysql_real_escape_string($g->image_link);
+					//sets all vars and safely escapes / casts them.
+					$prod_title = (String) mysql_real_escape_string($product->title);
+					$prod_desc = (String) mysql_real_escape_string($product->description);
+					$prod_link = (String) mysql_real_escape_string($product->link);
+					$prod_price = (float) mysql_real_escape_string($g->price);
+					$prod_imagelink = (String) mysql_real_escape_string($g->image_link);
 
-									//database magic here, this adds to the SQL query
-									$sql .= "(
-									'NULL',
-									'$prod_title',
-									'$prod_desc',
-									'$prod_link',
-									'$prod_imagelink',
-									$prod_price
-									), ";
-							}
+					//database magic here, this adds to the SQL query
+					$sql .= "(
+					'NULL',
+					'$prod_title',
+					'$prod_desc',
+					'$prod_link',
+					'$prod_imagelink',
+					$prod_price
+					), ";
+				}
 
-					}
-
-					//replaces the last comma of $sql with a semicolon
-					//so we get a valid SQL query
-					$sql = substr($sql,0,-2) . ";";
-
-					//gets rid of old results
-					//can't update current results and insert new ones - as brand names can change
-					$wpdb->query("TRUNCATE TABLE `$table_name`;");
-
-					//Execute the SQL query
-					dbDelta($sql);
-
-					//sets the time the XML feed was last updated.
-					update_option('goopro_lastupdated', time());
 			}
 
-			else {
-					die("Can't parse XML file!");
-			}
+			//replaces the last comma of $sql with a semicolon
+			//so we get a valid SQL query
+			$sql = substr($sql,0,-2) . ";";
+
+			//gets rid of old results
+			//can't update current results and insert new ones - as brand names can change
+			$wpdb->query("TRUNCATE TABLE `$table_name`;");
+
+			//Execute the SQL query
+			dbDelta($sql);
+
+			//sets the time the XML feed was last updated.
+			update_option('goopro_lastupdated', time());
+		}
+
+		else {
+			die("Can't parse XML file!");
+		}
 	}
     
 	function goopro_getproducts($num) {
@@ -152,25 +152,25 @@
 
 		//selects currency to display
 		switch(get_option('goopro_currency')) {
-				case "pound":
-						$currency = "&pound;";
-						break;
-				case "euro":
-						$currency = "&euro;";
-						break;
-				default:
-						$currency = "";
+			case "pound":
+				$currency = "&pound;";
+				break;
+			case "euro":
+				$currency = "&euro;";
+				break;
+			default:
+				$currency = "";
 		}
 
 		//outputs the products
 		foreach($result as $row) {?>
-				<div class="goopro_product">
-				<h4><a href="<?php echo $row->link?>"><?php echo "$row->title";?></a></h4>
-				<img src="<?php echo $row->image_link; ?>" alt=""/>
-				<span class="price"><?php echo $currency . $row->price;?></span>
-				</div>
+			<div class="goopro_product">
+			<h4><a href="<?php echo $row->link?>"><?php echo "$row->title";?></a></h4>
+			<img src="<?php echo $row->image_link; ?>" alt=""/>
+			<span class="price"><?php echo $currency . $row->price;?></span>
+			</div>
 
-				<?php
+			<?php
 		}
 	}
 
