@@ -145,7 +145,9 @@
         image_link,
         price
         FROM $table_name
-        LIMIT 0,$num;";
+        ORDER BY gp_id DESC
+        LIMIT 0,$num
+        ;";
         $result = $wpdb->get_results($sql);
         
         //selects currency to display
