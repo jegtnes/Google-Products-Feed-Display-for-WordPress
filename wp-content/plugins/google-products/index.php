@@ -54,9 +54,10 @@
 		//execute the SQL
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
+		
 	}
 
-	function goopro_updateProducts() {
+	function goopro_update_products() {
 		//requires some WordPress database magic stuff
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -138,6 +139,8 @@
 		global $wpdb;
 		$table_name = $wpdb->prefix . "goopro";
 
+		$content = "";
+		
 		//prepares the SQL statement
 		$sql = "SELECT 
 		title,
@@ -163,18 +166,122 @@
 		}
 
 		//outputs the products
-		foreach($result as $row) {?>
-			<div class="goopro_product">
-			<h4><a href="<?php echo $row->link?>"><?php echo "$row->title";?></a></h4>
-			<img src="<?php echo $row->image_link; ?>" alt=""/>
-			<span class="price"><?php echo $currency . $row->price;?></span>
-			</div>
-
-			<?php
+		foreach($result as $row) {
+			$content .= 
+			"<div class=\"goopro_product\">\n
+			<h4><a href=\"$row->link\">$row->title</a></h4>\n
+			<img src=\"$row->image_link\" alt=\"\"/>\n
+			<span class=\"price\">$currency$row->price</span>\n
+			</div>\n";
 		}
+		
+		return $content;
 	}
+	
+	function goopro_create_page() {
+		//Adds a new page, adapted from
+		//http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616
+		
+		$the_page_title = 'Latest Products';
+		$the_page_name = 'latest-products';
 
+		// the menu entry
+		delete_option("goopro_page_title");
+		add_option("goopro_page_title", $the_page_title, '', 'yes');
+		
+		// the slug
+		delete_option("goopro_page_name");
+		add_option("goopro_page_name", $the_page_name, '', 'yes');
+		
+		// the id
+		delete_option("goopro_page_id");
+		add_option("goopro_page_id", '0', '', 'yes');
+
+		$the_page = get_page_by_title($the_page_title);
+
+		if (!$the_page) {
+				// Create post object
+				$_p = array();
+				$_p['post_title'] = $the_page_title;
+				$_p['post_content'] = "Please do not edit, this will be overriden by the plugin";
+				$_p['post_status'] = 'publish';
+				$_p['post_type'] = 'page';
+				$_p['comment_status'] = 'closed';
+				$_p['ping_status'] = 'closed';
+				$_p['post_category'] = array(1); // the default 'Uncatrgorised'
+
+				// Insert the post into the database
+				$the_page_id = wp_insert_post( $_p );
+		}
+		
+		else {
+				// the plugin may have been previously active and the page may just be trashed
+				$the_page_id = $the_page->ID;
+				
+				//make sure the page is not trashed
+				$the_page->post_status = 'publish';
+				$the_page_id = wp_update_post($the_page);
+		}
+
+		delete_option("goopro_page_id");
+		add_option("goopro_page_id",$the_page_id );
+	}
+	
+	//sets up the parser to see whether the products page is accessed
+	function goopro_page_query_parser($q) {
+		$the_page_name = get_option( "goopro_page_name" );
+		$the_page_id = get_option( "goopro_page_id" );
+
+		//if permalinks are used?
+		if (!$q->did_permalink && (isset($q->query_vars['page_id'])) && (intval($q->query_vars['page_id']) == $the_page_id)) {
+			$q->set('goopro_page_called', TRUE );
+			return $q;
+		}
+		
+		//if permalinks aren't used
+		else if(isset($q->query_vars['pagename']) && (($q->query_vars['pagename'] == $the_page_name) OR (strpos($q->query_vars['pagename'],$the_page_name.'/') === 0))) {
+			$q->set('goopro_page_called', TRUE );
+			return $q;
+		}
+		
+		else {
+			$q->set('goopro_page_called', FALSE );
+			return $q;
+		}
+
+	}
+	
+	//this is what actually changes the page
+	function goopro_page_filter($posts) {
+		global $wp_query;
+
+		//if the Google Products page is called
+		if($wp_query->get("goopro_page_called")) {
+			//replace title and content with whatever we want
+			$posts[0]->post_title = "Latest " . get_option("goopro_brandname") . " products";
+			$posts[0]->post_content = goopro_getproducts(10);
+		}
+		
+		//and return it
+		return $posts;
+	}
+	
+	function goopro_remove_page() {
+    //the id of our page
+    $the_page_id = get_option("goopro_page_id");
+		
+    if($the_page_id) {
+			wp_delete_post( $the_page_id ); // this will trash, not delete
+    }
+
+    delete_option("goopro_page_title");
+    delete_option("goopro_page_name");
+    delete_option("goopro_page_id");
+	}
+	
 	register_activation_hook(__FILE__,'goopro_install');
+	add_filter( 'the_posts', 'goopro_page_filter' );
+	add_filter('parse_query','goopro_page_query_parser');
 	add_action('admin_head', 'admin_register_head');
 	add_action('admin_menu', 'goopro_admin_init');  
 ?>

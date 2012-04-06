@@ -34,7 +34,7 @@
 
 			<div class="goopro_widget">
 				<?php
-						goopro_getproducts($num);
+						echo goopro_getproducts($num);
 				?>
 			</div>
 
