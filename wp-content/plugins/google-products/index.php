@@ -56,6 +56,32 @@
 		dbDelta($sql);
 		
 	}
+	
+	//will be called on uninstallation of plugin
+	function goopro_uninstall() {
+		global $wpdb;
+
+		//sets the table name with the appropriate prefix
+		$table_name = $wpdb->prefix . "goopro";
+		
+		//drops the google products table
+		$sql = "DROP TABLE IF EXISTS $table_name;";
+		
+		//execute the SQL
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
+		
+		//removes the page if set up
+		goopro_remove_page();
+		
+		//removes settings
+		delete_option('goopro_brandname');  
+		delete_option('goopro_number');  
+		delete_option('goopro_currency');  
+		delete_option('goopro_feedurl');  
+		delete_option('goopro_countrycode');
+		delete_option("goopro_lastupdated");
+	}
 
 	function goopro_update_products() {
 		//requires some WordPress database magic stuff
@@ -285,6 +311,7 @@
 	}
 	
 	register_activation_hook(__FILE__,'goopro_install');
+	register_uninstall_hook(__FILE__,'goopro_uninstall');
 	add_filter( 'the_posts', 'goopro_page_filter' );
 	add_filter('parse_query','goopro_page_query_parser');
 	add_action('admin_head', 'admin_register_head');
