@@ -131,7 +131,6 @@
         }
     }
     
-    //TODO: Make this function actually work
     function goopro_getproducts($num) {
         //requires some WordPress database magic stuff
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -149,19 +148,26 @@
         LIMIT 0,$num;";
         $result = $wpdb->get_results($sql);
         
+        //selects currency to display
+        $currency = "";
+        if (get_option('goopro_currency') == 'pound') {
+            $currency = "&pound;";
+        }
+        
+        else if (get_option('goopro_currency') == 'euro') {
+            $currency = "&euro;";
+        }
+        
         //outputs the products
         foreach($result as $row) {?>
             <div class="goopro_product">
             <h4><a href="<?php echo $row->link?>"><?php echo "$row->title";?></a></h4>
             <img src="<?php echo $row->image_link; ?>" alt=""/>
-            <span class="price"><?php echo $row->price;?></span>
+            <span class="price"><?php echo $currency . $row->price;?></span>
             </div>
 
             <?php
         }
-        
-        echo "<div class=\"goopro_display\">";
-        echo "</div>";
     }
     
     register_activation_hook(__FILE__,'goopro_install');
