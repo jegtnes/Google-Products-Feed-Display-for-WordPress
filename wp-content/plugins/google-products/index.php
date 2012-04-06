@@ -43,7 +43,6 @@
 			$sql = "CREATE TABLE $table_name (
 			gp_id mediumint(9) NOT NULL AUTO_INCREMENT,
 			title varchar(200) NOT NULL,
-			description varchar(500),
 			link varchar(500) NOT NULL,
 			image_link varchar(500) NOT NULL,
 			price decimal(6,2) NOT NULL,
@@ -110,29 +109,30 @@
 
 			//loops through the XML file
 			foreach($sourceurl->channel->item as $product) {
-
 				//if the current looped item is the right brand, add it
 				if (stristr($product->title,$brand) == true) {
-
 					//Uses the namespace linked in the XML document
 					$namespaces = $product->getNameSpaces(true);
 					$g = $product->children($namespaces['g']);
-
+					
 					//sets all vars and safely escapes / casts them.
 					$prod_title = (String) mysql_real_escape_string($product->title);
-					$prod_desc = (String) mysql_real_escape_string($product->description);
 					$prod_link = (String) mysql_real_escape_string($product->link);
 					$prod_price = (float) mysql_real_escape_string($g->price);
 					$prod_imagelink = (String) mysql_real_escape_string($g->image_link);
-
+					
+					/*
+					 * Massive TODO:
+					 * Make sure the French feed doesn't ruin everything. God knows how.
+					 */
+					
 					//database magic here, this adds to the SQL query
-					$sql .= "(
+					echo $sql .= "(
 					'NULL',
 					'$prod_title',
-					'$prod_desc',
 					'$prod_link',
 					'$prod_imagelink',
-					$prod_price
+					'$prod_price'
 					), ";
 				}
 
@@ -141,13 +141,13 @@
 			//replaces the last comma of $sql with a semicolon
 			//so we get a valid SQL query
 			$sql = substr($sql,0,-2) . ";";
-
+			
 			//gets rid of old results
 			//can't update current results and insert new ones - as brand names can change
 			$wpdb->query("TRUNCATE TABLE `$table_name`;");
 
 			//Execute the SQL query
-			dbDelta($sql);
+			dbDelta($sql) or die(mysql_error());
 
 			//sets the time the XML feed was last updated.
 			update_option('goopro_lastupdated', time());
