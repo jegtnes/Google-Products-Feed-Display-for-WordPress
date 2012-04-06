@@ -14,16 +14,6 @@
             //sets the table name with the appropriate prefix
             $table_name = $wpdb->prefix . "goopro";
             
-            //prepares the SQL statement
-            $sql = "SELECT 
-            title,
-            link,
-            image_link,
-            price
-            FROM $table_name
-            LIMIT 0,100;";
-            
-            $result = $wpdb->get_results($sql);
             extract( $args );
             $title = apply_filters( 'widget_title', $instance['title'] );
             echo $before_widget;
@@ -33,20 +23,9 @@
             ?>
 
             <div class="goopro_widget">
-                <?php 
-                
-                //outputs the products
-                foreach($result as $row) {?>
-                    <div class="goopro_product">
-                    <h4><a href="<?php echo $row->link?>"><?php echo "$row->title";?></a></h4>
-                    <img src="<?php echo $row->image_link; ?>" alt=""/>
-                    <span class="price"><?php echo $row->price;?></span>
-                    </div>
-                    
-                    <?php
-                }
+                <?php
+                    goopro_getproducts(10);
                 ?>
-                
             </div>
 
             <?php
