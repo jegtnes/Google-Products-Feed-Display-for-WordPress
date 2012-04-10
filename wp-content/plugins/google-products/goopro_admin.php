@@ -3,24 +3,19 @@
 if($_POST['goopro_hidden'] == 'Y') {  
 
 	$goopro_brandname = $_POST['goopro_brandname'];  
-	update_option('goopro_brandname', $goopro_brandname);
-
 	$goopro_number = $_POST['goopro_number'];  
-	update_option('goopro_number', $goopro_number);
-
 	$goopro_currency = $_POST['goopro_currency'];  
-	update_option('goopro_currency', $goopro_currency);
-
 	$goopro_feedurl = $_POST['goopro_feedurl'];  
-	update_option('goopro_feedurl', $goopro_feedurl);
-
 	$goopro_countrycode = $_POST['goopro_countrycode'];  
-	update_option('goopro_countrycode', $goopro_countrycode);
-
-	goopro_update_products();
 	$goopro_lastupdated = get_option("goopro_lastupdated");
 
-	goopro_create_page();
+	if (goopro_update_products($goopro_brandname,$goopro_feedurl) == true) {
+			goopro_create_page();
+			update_option('goopro_brandname', $goopro_brandname);
+			update_option('goopro_number', $goopro_number);
+			update_option('goopro_currency', $goopro_currency);
+			update_option('goopro_feedurl', $goopro_feedurl);
+			update_option('goopro_countrycode', $goopro_countrycode);
 	?>
 	<div class="updated">
 		<p>
@@ -29,6 +24,17 @@ if($_POST['goopro_hidden'] == 'Y') {
 	</div>
 
 	<?php 
+	}
+	
+	else { 
+	?>
+		<div class="error">
+			<p>
+				<strong><?php _e("No \"$goopro_brandname\" products found, can't update feed settings."); ?></strong>
+			</p>
+		</div>
+		<?php
+	}
 }
 
 else if($_POST['goopro_update_hidden'] == 'Y') {
@@ -49,12 +55,6 @@ else if($_POST['goopro_update_hidden'] == 'Y') {
 	</div>
 	<?php
 
-}
-
-else if ($_POST['goopro_create_page'] == 'Y') {
-	goopro_remove_page();
-	$content = goopro_getproducts(get_option('goopro_number'));
-	goopro_create_page($content);
 }
 
 else {

@@ -82,7 +82,10 @@
 		delete_option("goopro_lastupdated");
 	}
 
-	function goopro_update_products() {
+	function goopro_update_products($brandname,$feedurl) {
+		
+		$success = false;
+		
 		//requires some WordPress database magic stuff
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -93,13 +96,13 @@
 		set_time_limit(120);
 
 		//the current brand name we're working with
-		$brand = (string) get_option("goopro_brandname");
+		$brand = (string) $brandname;
 
 		//sets the table name with the appropriate prefix
 		$table_name = $wpdb->prefix . "goopro";
 
 		//loads the source
-		$sourceurl = simplexml_load_file(get_option("goopro_feedurl"));
+		$sourceurl = simplexml_load_file($feedurl);
 
 		//prepares the start of the SQL statement we're working with
 		$sql = "INSERT INTO $table_name VALUES ";
@@ -127,7 +130,7 @@
 					 */
 					
 					//database magic here, this adds to the SQL query
-					echo $sql .= "(
+					$sql .= "(
 					'NULL',
 					'$prod_title',
 					'$prod_link',
@@ -137,25 +140,31 @@
 				}
 
 			}
-
-			//replaces the last comma of $sql with a semicolon
-			//so we get a valid SQL query
-			$sql = substr($sql,0,-2) . ";";
 			
-			//gets rid of old results
-			//can't update current results and insert new ones - as brand names can change
-			$wpdb->query("TRUNCATE TABLE `$table_name`;");
+			//if there are matching products
+			if ($sql != "INSERT INTO $table_name VALUES ") {
 
-			//Execute the SQL query
-			dbDelta($sql) or die(mysql_error());
+				//replaces the last comma of $sql with a semicolon
+				//so we get a valid SQL query
+				$sql = substr($sql,0,-2) . ";";
 
-			//sets the time the XML feed was last updated.
-			update_option('goopro_lastupdated', time());
+				//gets rid of old results
+				//can't update current results and insert new ones - as brand names can change
+				$wpdb->query("TRUNCATE TABLE `$table_name`;");
+
+				//Execute the SQL query
+				$wpdb->query("$sql") or die(mysql_error());
+
+				//sets the time the XML feed was last updated.
+				update_option('goopro_lastupdated', time());
+				$success = true;
+			}
 		}
-
+		
 		else {
 			die("Can't parse XML file!");
 		}
+		return $success;
 	}
     
 	function goopro_getproducts($num) {
@@ -287,7 +296,7 @@
 		if($wp_query->get("goopro_page_called")) {
 			//replace title and content with whatever we want
 			$posts[0]->post_title = "Latest " . get_option("goopro_brandname") . " products";
-			$posts[0]->post_content = goopro_getproducts(10);
+			$posts[0]->post_content = goopro_getproducts(get_option(goopro_number));
 		}
 		
 		//and return it
