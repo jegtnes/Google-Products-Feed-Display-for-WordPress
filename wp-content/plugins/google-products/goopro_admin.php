@@ -6,6 +6,12 @@ if($_POST['goopro_hidden'] == 'Y') {
 	$goopro_currency = $_POST['goopro_currency'];  
 	$goopro_feedurl = $_POST['goopro_feedurl'];    
 	$goopro_lastupdated = get_option("goopro_lastupdated");
+	$goopro_cron_interval = $_POST['goopro_update_interval'];
+	
+	if(!isset($_POST['goopro_cron_enabled'])) {
+		$goopro_cron_enabled = false;
+	}
+	else $goopro_cron_enabled = true;	
 
 	if (goopro_update_products($goopro_brandname,$goopro_feedurl) == true) {
 			goopro_create_page();
@@ -13,6 +19,8 @@ if($_POST['goopro_hidden'] == 'Y') {
 			update_option('goopro_number', $goopro_number);
 			update_option('goopro_currency', $goopro_currency);
 			update_option('goopro_feedurl', $goopro_feedurl);
+			update_option('goopro_cron_interval',$goopro_cron_interval);
+			update_option('goopro_cron_enabled',$goopro_cron_enabled);
 	?>
 	<div class="updated">
 		<p>
@@ -35,14 +43,14 @@ if($_POST['goopro_hidden'] == 'Y') {
 }
 
 else if($_POST['goopro_update_hidden'] == 'Y') {
-
-	goopro_update_products();
-	goopro_create_page();
 	$goopro_brandname = get_option('goopro_brandname');  
 	$goopro_number = get_option('goopro_number');  
 	$goopro_currency = get_option('goopro_currency');  
 	$goopro_feedurl = get_option('goopro_feedurl');   
 	$goopro_lastupdated = get_option("goopro_lastupdated");
+	goopro_update_products($goopro_brandname,$goopro_feedurl);
+	goopro_create_page();
+	
 	?>
 	<div class="updated">
 		<p>
@@ -106,19 +114,26 @@ else {
 		</ul>
 		
 		<h4>Automatic update</h4>
-		<label for="goopro_cron_enabled">Update feed automatically?</label>
-		<input type="checkbox" name="goopro_cron_enabled" id="goopro_cron_enabled" />
-		
-		<label for="goopro_update_interval">Update interval</label>
-		<select id="goopro_update_interval" name="goopro_update_interval">
-		<?php 
-			foreach(wp_get_schedules() as $k => $v) {
-				?><option name="<?php echo $k?>"><?php echo $v['display']?></option>
-			<?php
-			}
-		?>
-		</select>
-		
+		<ul>
+			<li>
+				<label for="goopro_cron_enabled">Update feed automatically?</label>
+				<input type="checkbox" name="goopro_cron_enabled" id="goopro_cron_enabled" <?php if ($goopro_cron_enabled == true) echo "checked=\"checked\""?> />
+			</li>
+			
+			<li>
+				<label for="goopro_update_interval">Update interval</label>
+				<select id="goopro_update_interval" name="goopro_update_interval">
+				<?php 
+					foreach(wp_get_schedules() as $k => $v) {
+						?><option value="<?php echo $k?>" <?php if ($k == get_option('goopro_cron_interval')) echo "selected=\"selected\""?>>
+							<?php echo $v['display']?>
+						</option>
+					<?php
+					} 
+				?>
+				</select>
+			</li>
+		</ul>
 		<p class="submit">  
 		<input type="submit" name="Submit" value="<?php _e('Update Options &amp; Feed', 'goopro_upopt' ) ?>" />  
 		</p>
