@@ -11,25 +11,37 @@
 	http://net.tutsplus.com/tutorials/wordpress/creating-a-custom-wordpress-plugin-from-scratch/
 	*/  
 
-	function goopro_admin() {  
-		include('goopro_admin.php');  
-	}  
 
 	//includes the widget code
 	include_once('GooproWidget.php');
 
+	/**
+	 * Ensures the admin page is included
+	 */
+	function goopro_admin() {  
+		include('goopro_admin.php');  
+	}  
+	
+	/**
+	 * Creates an option page in the WP admin area 
+	 */
 	function goopro_admin_init() {  
 		add_options_page("Google Products Feed Display: Settings", "Google Products Feed Display", 1, "google_products_feed_display", "goopro_admin");
 	}  
 
-	//adds styling to the admin page
+	/**
+	 * Adds styling to the admin area 
+	 */
 	function admin_register_head() {
 		$siteurl = get_option('siteurl');
 		$url = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/style.css';
 		echo "<link rel='stylesheet' type='text/css' href='$url' />\n";
 	}
 
-	//this will be called on installation of the plugin
+	/**
+	 * Will be called on installation of the plugin. Creates the table.
+	 * @global type $wpdb 
+	 */
 	function goopro_install() {
 		global $wpdb;
 
@@ -56,7 +68,10 @@
 		
 	}
 	
-	//will be called on uninstallation of plugin
+	/**
+	 * Will be called on uninstallation of the plugin. Removes the plugin table and unregisters settings.
+	 * @global type $wpdb 
+	 */
 	function goopro_uninstall() {
 		global $wpdb;
 
@@ -82,8 +97,15 @@
 		delete_option("goopro_lastupdated");
 	}
 
+	
+	/**
+	 * Updates the database with products according to the parameters.
+	 * @global type $wpdb The WP database class
+	 * @param type $brandname The brand we want to use
+	 * @param type $feedurl The XML feed we update the DB from
+	 * @return boolean Returns true upon success.
+	 */
 	function goopro_update_products($brandname,$feedurl) {
-		
 		$success = false;
 		
 		//requires some WordPress database magic stuff
@@ -167,6 +189,12 @@
 		return $success;
 	}
     
+	/**
+	 * Returns the specified number of products (with markup)
+	 * @global type $wpdb The WordPress database
+	 * @param type $num The number of products to return
+	 * @return type
+	 */
 	function goopro_getproducts($num) {
 		//requires some WordPress database magic stuff
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -213,9 +241,12 @@
 		return $content;
 	}
 	
-	function goopro_create_page() {
-		//Adds a new page
-		//adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616 - thanks, mr. Crossen!
+	/**
+	 * Creates a WordPress top-level page
+	 * adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616
+	 * thanks, mr. Crossen!
+	 */
+	function goopro_create_page() {		
 		
 		$the_page_title = 'Latest Products';
 		$the_page_name = 'latest-products';
@@ -262,8 +293,13 @@
 		add_option("goopro_page_id",$the_page_id );
 	}
 	
-	//sets up the parser to see whether the products page is accessed
-	//adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616 - thanks, mr. Crossen!
+
+	/**
+	 * Checks to see whether we're currently accessing the created latest products page
+	 * Also adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616
+	 * @param type $q
+	 * @return type 
+	 */
 	function goopro_page_query_parser($q) {
 		$the_page_name = get_option( "goopro_page_name" );
 		$the_page_id = get_option( "goopro_page_id" );
@@ -287,8 +323,13 @@
 
 	}
 	
-	//this is what actually changes the page
-	//adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616 - thanks, mr. Crossen!
+	/**
+	 * Changes the content of the latest products page if it is called
+	 * Also adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616
+	 * @global type $wp_query
+	 * @param type $posts
+	 * @return type 
+	 */
 	function goopro_page_filter($posts) {
 		global $wp_query;
 
@@ -303,8 +344,10 @@
 		return $posts;
 	}
 	
-	//removes the page
-	//adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616 - thanks, mr. Crossen!
+	/**
+	 * Removes the latest products page and removes the options associated with them
+	 * Also adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616
+	 */
 	function goopro_remove_page() {
 		
     //the id of our page
