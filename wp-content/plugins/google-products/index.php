@@ -66,6 +66,8 @@
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
 		
+		update_option("goopro_cron",false);
+		
 	}
 	
 	/**
@@ -94,6 +96,7 @@
 		delete_option('goopro_currency');  
 		delete_option('goopro_feedurl');  
 		delete_option("goopro_lastupdated");
+		delete_option("goopro_cron");
 	}
 
 	
@@ -238,6 +241,71 @@
 	}
 	
 	/**
+	 * Adds extra WP cron intervals for perusal
+	 * @return Array
+	 */
+	function goopro_extra_cron_intervals() {
+				
+		$sched['monthly'] = array(
+				'interval' => 2629743,
+				'display'  => 'Once every average month (30.44 days)',
+    );
+		
+		$sched['fortnight'] = array(
+				'interval' => 1209600,
+				'display'  => 'Once every fortnight',
+    );
+		
+		$sched['weekly'] = array(
+				'interval' => 604800,
+				'display'  => 'Once weekly',
+    );
+		
+		$sched['6_days'] = array(
+				'interval' => 518400,
+				'display'  => 'Once every 6 days',
+    );
+		
+		$sched['5_days'] = array(
+				'interval' => 432000,
+				'display'  => 'Once every 5 days',
+    );
+		
+		$sched['4_days'] = array(
+				'interval' => 345600,
+				'display'  => 'Once every 4 days',
+    );
+		
+		$sched['3_days'] = array(
+				'interval' => 259200,
+				'display'  => 'Once every 3 days',
+    );
+		
+		$sched['2_days'] = array(
+				'interval' => 172800,
+				'display'  => 'Once every 2 days',
+    );
+		
+		$sched['half_hour'] = array(
+				'interval' => 1800,
+				'display'  => 'Once every half an hour',
+    );
+		
+		$sched['15_minutes'] = array(
+				'interval' => 900,
+				'display'  => 'Once every 15 minutes',
+    );
+		
+		$sched['minute'] = array(
+				'interval' => 60,
+				'display'  => 'Once every minute',
+    );
+		
+		return $sched;
+	}
+
+	
+	/**
 	 * Creates a WordPress top-level page
 	 * adapted from http://wordpress.org/support/topic/how-do-i-create-a-new-page-with-the-plugin-im-building#post-1341616
 	 * thanks, mr. Crossen!
@@ -360,7 +428,9 @@
 	
 	register_activation_hook(__FILE__,'goopro_install');
 	register_uninstall_hook(__FILE__,'goopro_uninstall');
-	add_filter( 'the_posts', 'goopro_page_filter' );
+	
+	add_filter('cron_schedules', 'goopro_extra_cron_intervals');
+	add_filter('the_posts', 'goopro_page_filter');
 	add_filter('parse_query','goopro_page_query_parser');
 	add_action('admin_head', 'admin_register_head');
 	add_action('admin_menu', 'goopro_admin_init');  
