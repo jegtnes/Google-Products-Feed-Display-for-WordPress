@@ -4,8 +4,7 @@ if($_POST['goopro_hidden'] == 'Y') {
 	$goopro_brandname = $_POST['goopro_brandname'];  
 	$goopro_number = $_POST['goopro_number'];  
 	$goopro_currency = $_POST['goopro_currency'];  
-	$goopro_feedurl = $_POST['goopro_feedurl'];    
-	$goopro_lastupdated = get_option("goopro_lastupdated");
+	$goopro_feedurl = $_POST['goopro_feedurl'];
 	$goopro_cron_interval = $_POST['goopro_update_interval'];
 	
 	if(!isset($_POST['goopro_cron_enabled'])) {
@@ -14,6 +13,7 @@ if($_POST['goopro_hidden'] == 'Y') {
 	else $goopro_cron_enabled = true;	
 
 	if (goopro_update_products($goopro_brandname,$goopro_feedurl) == true) {
+			$goopro_lastupdated = get_option("goopro_lastupdated");
 			goopro_create_page();
 			update_option('goopro_brandname', $goopro_brandname);
 			update_option('goopro_number', $goopro_number);
@@ -47,8 +47,8 @@ else if($_POST['goopro_update_hidden'] == 'Y') {
 	$goopro_number = get_option('goopro_number');  
 	$goopro_currency = get_option('goopro_currency');  
 	$goopro_feedurl = get_option('goopro_feedurl');   
-	$goopro_lastupdated = get_option("goopro_lastupdated");
 	goopro_update_products($goopro_brandname,$goopro_feedurl);
+	$goopro_lastupdated = get_option("goopro_lastupdated");
 	goopro_create_page();
 	
 	?>
