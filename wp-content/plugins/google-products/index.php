@@ -4,7 +4,7 @@
 	Plugin URI: https://github.com/jegtnes/Google-Products-Feed-Display-for-WordPress
 	Description: A plugin to acquire, parse and display products from a Google Products feed.
 	Author: Alexander Jegtnes 
-	Version: 0.5
+	Version: 0.9
 	Author URI: http://jegtnes.co.uk
 	--------------------------------
 	Thanks to Christian Lupu for this tutorial, which is what most of the WP functionality is inspired by.
@@ -408,6 +408,10 @@
     delete_option("goopro_page_id");
 	}
 	
+	/**
+	 * Registers or unregisters a cron job depending on settings.
+	 * This function is hooked to the wp hook. 
+	 */
 	function register_goopro_cron() {
 		$interval = get_option('goopro_cron_interval');
 		
