@@ -24,6 +24,8 @@
 		delete_option("goopro_cron_interval");
 		delete_option("goopro_cron_enabled");
 		
+		wp_clear_scheduled_hook( 'update_frooglefeed' );
+		
 		remove_filter('cron_schedules', 'goopro_extra_cron_intervals');
 		remove_filter('the_posts', 'goopro_page_filter');
 		remove_filter('parse_query','goopro_page_query_parser');

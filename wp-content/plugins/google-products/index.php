@@ -216,13 +216,11 @@
 		
 		return $content;
 	}
-	
-	function goopro_cron($interval) {
 		
-		//if the function is not scheduled and the cron is enabled
-		if (!wp_next_scheduled('update_frooglefeed') && get_option('goopro_cron_enabled') == true) {
-			wp_schedule_event( time(), $interval, 'update_frooglefeed' );
-		}
+	
+	$interval = get_option('goopro_cron_interval');
+	if (!wp_next_scheduled('update_frooglefeed') && get_option('goopro_cron_enabled') == true) {
+		wp_schedule_event( time(), $interval, 'update_frooglefeed' );
 	}
 	
 	/**
@@ -233,7 +231,7 @@
 				
 		$sched['monthly'] = array(
 				'interval' => 2629743,
-				'display'  => 'Once every average month (30.44 days)',
+				'display'  => 'Once every month (30.44 days)',
     );
 		
 		$sched['fortnight'] = array(
@@ -416,6 +414,7 @@
 	add_filter('cron_schedules', 'goopro_extra_cron_intervals');
 	add_filter('the_posts', 'goopro_page_filter');
 	add_filter('parse_query','goopro_page_query_parser');
+	
 	add_action('update_frooglefeed', 'goopro_update_products');
 	add_action('admin_head', 'admin_register_head');
 	add_action('admin_menu', 'goopro_admin_init');  

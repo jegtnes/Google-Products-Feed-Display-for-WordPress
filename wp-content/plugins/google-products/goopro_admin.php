@@ -104,8 +104,24 @@ else {
 				<input type="text" name="goopro_feedurl" id="goopro_feedurl" value="<?php echo $goopro_feedurl?>"/>
 			</li>
 		</ul>
+		
+		<h4>Automatic update</h4>
+		<label for="goopro_cron_enabled">Update feed automatically?</label>
+		<input type="checkbox" name="goopro_cron_enabled" id="goopro_cron_enabled" />
+		
+		<label for="goopro_update_interval">Update interval</label>
+		<select id="goopro_update_interval" name="goopro_update_interval">
+		<?php 
+			foreach(wp_get_schedules() as $k => $v) {
+				?><option name="<?php echo $k?>"><?php echo $v['display']?></option>
+			<?php
+			}
+		?>
+		</select>
+		
 		<p class="submit">  
 		<input type="submit" name="Submit" value="<?php _e('Update Options &amp; Feed', 'goopro_upopt' ) ?>" />  
 		</p>
 	</form>
+	
 </div>

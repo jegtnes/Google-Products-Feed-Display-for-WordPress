@@ -11,3 +11,8 @@
 	box-sizing: border-box;
 	display: inline-block
 }
+
+input[type="checkbox"] {
+	display: inline;
+	width: auto;
+}
