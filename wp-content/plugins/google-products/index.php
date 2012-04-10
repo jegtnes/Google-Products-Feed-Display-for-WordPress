@@ -87,8 +87,6 @@
 		
 		$success = false;
 		
-		update_option("stuffHasWorked","YiipeeKayYayMotherEffer");
-		
 		//requires some WordPress database magic stuff
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
