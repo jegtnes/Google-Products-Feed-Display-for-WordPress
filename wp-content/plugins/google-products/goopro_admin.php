@@ -43,6 +43,8 @@ if($_POST['goopro_hidden'] == 'Y') {
 }
 
 else if($_POST['goopro_update_hidden'] == 'Y') {
+	$goopro_cron_enabled = get_option('goopro_cron_enabled');
+	$goopro_cron_interval = get_option('goopro_cron_interval');
 	$goopro_brandname = get_option('goopro_brandname');  
 	$goopro_number = get_option('goopro_number');  
 	$goopro_currency = get_option('goopro_currency');  
@@ -62,6 +64,8 @@ else if($_POST['goopro_update_hidden'] == 'Y') {
 }
 
 else {
+	$goopro_cron_enabled = get_option('goopro_cron_enabled');
+	$goopro_cron_interval = get_option('goopro_cron_interval');
 	$goopro_brandname = get_option('goopro_brandname');  
 	$goopro_number = get_option('goopro_number');  
 	$goopro_currency = get_option('goopro_currency');  

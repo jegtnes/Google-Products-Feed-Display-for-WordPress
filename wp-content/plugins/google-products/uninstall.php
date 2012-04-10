@@ -24,12 +24,13 @@
 		delete_option("goopro_cron_interval");
 		delete_option("goopro_cron_enabled");
 		
-		wp_clear_scheduled_hook( 'update_frooglefeed' );
+		wp_clear_scheduled_hook('update_frooglefeed');
 		
 		remove_filter('cron_schedules', 'goopro_extra_cron_intervals');
 		remove_filter('the_posts', 'goopro_page_filter');
 		remove_filter('parse_query','goopro_page_query_parser');
 		
+		remove_action('wp', 'register_goopro_cron');
 		remove_action('update_frooglefeed', 'goopro_update_products');
 		remove_action('admin_head', 'admin_register_head');
 		remove_action('admin_menu', 'goopro_admin_init');  

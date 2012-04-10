@@ -87,6 +87,8 @@
 		
 		$success = false;
 		
+		update_option("stuffHasWorked","YiipeeKayYayMotherEffer");
+		
 		//requires some WordPress database magic stuff
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -217,7 +219,6 @@
 		return $content;
 	}
 		
-	
 	$interval = get_option('goopro_cron_interval');
 	if (!wp_next_scheduled('update_frooglefeed') && get_option('goopro_cron_enabled') == true) {
 		wp_schedule_event( time(), $interval, 'update_frooglefeed' );
@@ -409,12 +410,27 @@
     delete_option("goopro_page_id");
 	}
 	
+	function register_goopro_cron() {
+		$interval = get_option('goopro_cron_interval');
+		
+		//if cron is enabled and we haven't already added this event
+		if (!wp_next_scheduled('update_frooglefeed') && get_option('goopro_cron_enabled') == true) {
+			wp_schedule_event( time(), $interval, 'update_frooglefeed' );
+		}
+		
+		//if cron is disabled, clear the schedule
+		if (get_option('goopro_cron_enabled') == false) {
+			wp_clear_scheduled_hook('update_frooglefeed');
+		}
+	}
+	
 	register_activation_hook(__FILE__,'goopro_install');
 	
 	add_filter('cron_schedules', 'goopro_extra_cron_intervals');
 	add_filter('the_posts', 'goopro_page_filter');
 	add_filter('parse_query','goopro_page_query_parser');
 	
+	add_action('wp', 'register_goopro_cron');
 	add_action('update_frooglefeed', 'goopro_update_products');
 	add_action('admin_head', 'admin_register_head');
 	add_action('admin_menu', 'goopro_admin_init');  
