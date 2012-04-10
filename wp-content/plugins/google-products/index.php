@@ -66,39 +66,10 @@
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
 		
-		update_option("goopro_cron",false);
+		update_option("goopro_cron_interval","daily");
+		update_option("goopro_cron_enabled",false);
 		
 	}
-	
-	/**
-	 * Will be called on uninstallation of the plugin. Removes the plugin table and unregisters settings.
-	 * @global type $wpdb 
-	 */
-	function goopro_uninstall() {
-		global $wpdb;
-
-		//sets the table name with the appropriate prefix
-		$table_name = $wpdb->prefix . "goopro";
-		
-		//drops the google products table
-		$sql = "DROP TABLE IF EXISTS $table_name;";
-		
-		//execute the SQL
-		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-		dbDelta($sql);
-		
-		//removes the page if set up
-		goopro_remove_page();
-		
-		//removes settings
-		delete_option('goopro_brandname');  
-		delete_option('goopro_number');  
-		delete_option('goopro_currency');  
-		delete_option('goopro_feedurl');  
-		delete_option("goopro_lastupdated");
-		delete_option("goopro_cron");
-	}
-
 	
 	/**
 	 * Updates the database with products according to the parameters.
@@ -107,7 +78,13 @@
 	 * @param type $feedurl The XML feed we update the DB from
 	 * @return boolean Returns true upon success.
 	 */
-	function goopro_update_products($brandname,$feedurl) {
+	
+	function goopro_update_products($brandname, $feedurl) {
+		
+		//sets defaults
+		if (!isset($brandname)) $brandname = get_option("goopro_brandname");
+		if (!isset($feedurl)) $feedurl = get_option("goopro_feedurl");
+		
 		$success = false;
 		
 		//requires some WordPress database magic stuff
@@ -238,6 +215,14 @@
 		}
 		
 		return $content;
+	}
+	
+	function goopro_cron($interval) {
+		
+		//if the function is not scheduled and the cron is enabled
+		if (!wp_next_scheduled('update_frooglefeed') && get_option('goopro_cron_enabled') == true) {
+			wp_schedule_event( time(), $interval, 'update_frooglefeed' );
+		}
 	}
 	
 	/**
@@ -427,11 +412,11 @@
 	}
 	
 	register_activation_hook(__FILE__,'goopro_install');
-	register_uninstall_hook(__FILE__,'goopro_uninstall');
 	
 	add_filter('cron_schedules', 'goopro_extra_cron_intervals');
 	add_filter('the_posts', 'goopro_page_filter');
 	add_filter('parse_query','goopro_page_query_parser');
+	add_action('update_frooglefeed', 'goopro_update_products');
 	add_action('admin_head', 'admin_register_head');
 	add_action('admin_menu', 'goopro_admin_init');  
 ?>
