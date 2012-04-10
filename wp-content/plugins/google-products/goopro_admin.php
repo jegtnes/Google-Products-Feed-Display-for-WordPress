@@ -1,12 +1,10 @@
 <?php
-
 if($_POST['goopro_hidden'] == 'Y') {  
 
 	$goopro_brandname = $_POST['goopro_brandname'];  
 	$goopro_number = $_POST['goopro_number'];  
 	$goopro_currency = $_POST['goopro_currency'];  
-	$goopro_feedurl = $_POST['goopro_feedurl'];  
-	$goopro_countrycode = $_POST['goopro_countrycode'];  
+	$goopro_feedurl = $_POST['goopro_feedurl'];    
 	$goopro_lastupdated = get_option("goopro_lastupdated");
 
 	if (goopro_update_products($goopro_brandname,$goopro_feedurl) == true) {
@@ -15,7 +13,6 @@ if($_POST['goopro_hidden'] == 'Y') {
 			update_option('goopro_number', $goopro_number);
 			update_option('goopro_currency', $goopro_currency);
 			update_option('goopro_feedurl', $goopro_feedurl);
-			update_option('goopro_countrycode', $goopro_countrycode);
 	?>
 	<div class="updated">
 		<p>
@@ -44,8 +41,7 @@ else if($_POST['goopro_update_hidden'] == 'Y') {
 	$goopro_brandname = get_option('goopro_brandname');  
 	$goopro_number = get_option('goopro_number');  
 	$goopro_currency = get_option('goopro_currency');  
-	$goopro_feedurl = get_option('goopro_feedurl');  
-	$goopro_countrycode = get_option('goopro_countrycode');  
+	$goopro_feedurl = get_option('goopro_feedurl');   
 	$goopro_lastupdated = get_option("goopro_lastupdated");
 	?>
 	<div class="updated">
@@ -62,7 +58,6 @@ else {
 	$goopro_number = get_option('goopro_number');  
 	$goopro_currency = get_option('goopro_currency');  
 	$goopro_feedurl = get_option('goopro_feedurl');  
-	$goopro_countrycode = get_option('goopro_countrycode');  
 	$goopro_lastupdated = get_option("goopro_lastupdated");
 } 
 ?>
@@ -107,10 +102,6 @@ else {
 			<li>
 				<label for="goopro_feedurl">Feed URL</label>
 				<input type="text" name="goopro_feedurl" id="goopro_feedurl" value="<?php echo $goopro_feedurl?>"/>
-			</li>
-			<li>
-				<label for="goopro_countrycode">Feed country code:</label>
-				<input type="text" name="goopro_countrycode" id="goopro_countrycode" value="<?php echo $goopro_countrycode?>"/>
 			</li>
 		</ul>
 		<p class="submit">  

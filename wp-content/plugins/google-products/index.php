@@ -93,7 +93,6 @@
 		delete_option('goopro_number');  
 		delete_option('goopro_currency');  
 		delete_option('goopro_feedurl');  
-		delete_option('goopro_countrycode');
 		delete_option("goopro_lastupdated");
 	}
 
@@ -146,11 +145,6 @@
 					$prod_price = (float) mysql_real_escape_string($g->price);
 					$prod_imagelink = (String) mysql_real_escape_string($g->image_link);
 					
-					/*
-					 * Massive TODO:
-					 * Make sure the French feed doesn't ruin everything. God knows how.
-					 */
-					
 					//database magic here, this adds to the SQL query
 					$sql .= "(
 					'NULL',
@@ -196,12 +190,14 @@
 	 * @return type
 	 */
 	function goopro_getproducts($num) {
+		
 		//requires some WordPress database magic stuff
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . "goopro";
 
+		//What to return
 		$content = "";
 		
 		//prepares the SQL statement
@@ -274,10 +270,10 @@
 				$_p['post_type'] = 'page';
 				$_p['comment_status'] = 'closed';
 				$_p['ping_status'] = 'closed';
-				$_p['post_category'] = array(1); // the default 'Uncatrgorised'
+				$_p['post_category'] = array(1); // the default 'Uncategorised'
 
 				// Insert the post into the database
-				$the_page_id = wp_insert_post( $_p );
+				$the_page_id = wp_insert_post($_p);
 		}
 		
 		else {
