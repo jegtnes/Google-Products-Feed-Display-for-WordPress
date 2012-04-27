@@ -82,11 +82,23 @@
 	function goopro_update_products($brandname, $feedurl) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "goopro";
+		
+		//checks for a complete installation
 		if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) { ?>
-			<h4>Installation procedure did not happen correctly (this can happen on multi-user blog networks). Attempting to reinstall. </h4>
+			<h4>Installation procedure did not happen correctly (this can happen on multi-user blog networks). Attempting to reinstall...</h4>
+			
 			<?php 
 			goopro_install();
+			if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+				?><h4>Re-installation failed. Please email <a href="mailto:alexander.j@lrindustries.eu">alexander.j@lrindustries.eu</a> with this information and I'll try to help you out.</h4>
+				<?php 
+			}
+			else {
+			?><h4>Re-installation succeeded. Everything should be running smoothly now!</h4> 
+			<?php	}
 		}
+
+		
 		//sets defaults
 		if (!isset($brandname)) $brandname = get_option("goopro_brandname");
 		if (!isset($feedurl)) $feedurl = get_option("goopro_feedurl");
