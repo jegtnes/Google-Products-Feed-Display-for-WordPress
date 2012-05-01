@@ -7,13 +7,16 @@ DOMReady.add(cronControl);
 function cronControl() {
 	//checks for the presence of elements
 	if (document.getElementById && document.getElementById('goopro_cron_enabled') && document.getElementById('goopro_update_interval')) {
+
+		var cronTime = document.getElementById('goopro_update_interval');
+		var cronCheck = document.getElementById('goopro_cron_enabled');
+
+		//disables on DOM ready if disabled
+		if (cronCheck.checked == false) cronTime.disabled = true;
 		
 		//click handler for the cron checkbox
-		document.getElementById('goopro_cron_enabled').onclick = function() {
+		cronCheck.onclick = function() {
 			
-			//the select box to control
-			var cronTime = document.getElementById('goopro_update_interval');
-
 			//disables or enables the time setting select
 			this.checked == true ? cronTime.disabled = false : cronTime.disabled = true;
 		}
