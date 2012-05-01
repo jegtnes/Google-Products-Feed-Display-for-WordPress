@@ -4,7 +4,7 @@
 	Plugin URI: https://github.com/jegtnes/Google-Products-Feed-Display-for-WordPress
 	Description: A plugin to acquire, parse and display products from a Google Products feed.
 	Author: Alexander Jegtnes 
-	Version: 0.9
+	Version: 1.0
 	Author URI: http://jegtnes.co.uk
 	--------------------------------
 	Thanks to Christian Lupu for this tutorial, which is what most of the WP functionality is inspired by.
