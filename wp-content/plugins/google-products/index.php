@@ -91,13 +91,11 @@
 			
 			<?php 
 			goopro_install();
-			if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-				?><h4>Re-installation failed. Please email <a href="mailto:alexander.j@lrindustries.eu">alexander.j@lrindustries.eu</a> with this information and I'll try to help you out.</h4>
-				<?php 
-			}
-			else {
-			?><h4>Re-installation succeeded. Everything should be running smoothly now!</h4> 
-			<?php	}
+			if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name): ?>
+				<h4>Re-installation failed. Please email <a href="mailto:alexander.j@lrindustries.eu">alexander.j@lrindustries.eu</a> with this information and I'll try to help you out.</h4>
+				<?php else: ?>
+				<h4>Re-installation succeeded. Everything should be running smoothly now!</h4> 
+			<?php	endif; 	
 		}
 
 		

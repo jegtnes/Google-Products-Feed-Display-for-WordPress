@@ -1,5 +1,5 @@
 <?php
-if($_POST['goopro_hidden'] == 'Y') {  
+if($_POST['goopro_hidden'] == 'Y'):  
 
 	$goopro_brandname = $_POST['goopro_brandname'];  
 	$goopro_number = $_POST['goopro_number'];  
@@ -12,7 +12,7 @@ if($_POST['goopro_hidden'] == 'Y') {
 	}
 	else $goopro_cron_enabled = true;	
 
-	if (goopro_update_products($goopro_brandname,$goopro_feedurl) == true) {
+	if (goopro_update_products($goopro_brandname,$goopro_feedurl) == true):
 			$goopro_lastupdated = get_option("goopro_lastupdated");
 			goopro_create_page();
 			update_option('goopro_brandname', $goopro_brandname);
@@ -24,25 +24,21 @@ if($_POST['goopro_hidden'] == 'Y') {
 	?>
 	<div class="updated">
 		<p>
-			<strong><?php _e('Options saved &amp; feed updated.' ); ?></strong>
+			<strong>Options saved &amp; feed updated.</strong>
 		</p>
 	</div>
 
-	<?php 
-	}
-	
-	else { 
-	?>
+	<?php else: ?>
 		<div class="error">
 			<p>
 				<strong><?php _e("No \"$goopro_brandname\" products found, can't update feed settings."); ?></strong>
 			</p>
 		</div>
-		<?php
-	}
-}
 
-else if($_POST['goopro_update_hidden'] == 'Y') {
+		<?php 
+	endif; 
+
+	elseif($_POST['goopro_update_hidden'] == 'Y'):
 	$goopro_cron_enabled = get_option('goopro_cron_enabled');
 	$goopro_cron_interval = get_option('goopro_cron_interval');
 	$goopro_brandname = get_option('goopro_brandname');  
@@ -51,19 +47,15 @@ else if($_POST['goopro_update_hidden'] == 'Y') {
 	$goopro_feedurl = get_option('goopro_feedurl');   
 	goopro_update_products($goopro_brandname,$goopro_feedurl);
 	$goopro_lastupdated = get_option("goopro_lastupdated");
-	goopro_create_page();
-	
+	goopro_create_page(); 
 	?>
 	<div class="updated">
 		<p>
 			<strong><?php _e('Feed updated.' ); ?></strong>
 		</p>
 	</div>
-	<?php
 
-}
-
-else {
+	<?php else:
 	$goopro_cron_enabled = get_option('goopro_cron_enabled');
 	$goopro_cron_interval = get_option('goopro_cron_interval');
 	$goopro_brandname = get_option('goopro_brandname');  
@@ -71,7 +63,8 @@ else {
 	$goopro_currency = get_option('goopro_currency');  
 	$goopro_feedurl = get_option('goopro_feedurl');  
 	$goopro_lastupdated = get_option("goopro_lastupdated");
-} 
+	
+endif;
 ?>
 
 <div class="wrap">
