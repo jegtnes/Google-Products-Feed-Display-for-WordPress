@@ -129,10 +129,23 @@
 		//checks that the XML file is reachable
 		if (!empty($sourceurl)) {
 
+			//splits search string into array
+			$search_string = explode(" ", $brand);
+			
 			//loops through the XML file
 			foreach($sourceurl->channel->item as $product) {
-				//if the current looped item is the right brand, add it
-				if (stristr($product->title,$brand) == true) {
+				
+				//assume we have a match
+				$match = true;
+				
+				foreach($search_string as $x) {
+					//if the current item doesn't match a word of the brand search, false
+					if (stristr($product->title,$x) === false) {
+						$match = false;
+					}
+				}
+				
+				if ($match == true) {
 					//Uses the namespace linked in the XML document
 					$namespaces = $product->getNameSpaces(true);
 					$g = $product->children($namespaces['g']);
@@ -152,7 +165,6 @@
 					'$prod_price'
 					), ";
 				}
-
 			}
 			
 			//if there are matching products
