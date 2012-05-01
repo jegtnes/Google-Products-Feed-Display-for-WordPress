@@ -34,8 +34,10 @@
 	 */
 	function admin_register_head() {
 		$siteurl = get_option('siteurl');
-		$url = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/style.css';
-		echo "<link rel='stylesheet' type='text/css' href='$url' />\n";
+		$css = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/style.css';
+		$js = $siteurl . '/wp-content/plugins/' . basename(dirname(__FILE__)) . '/js.js';
+		echo "<script type='text/javascript' src='$js'></script>\n";
+		echo "<link rel='stylesheet' type='text/css' href='$css' />\n";
 	}
 
 	/**
@@ -226,9 +228,9 @@
 		foreach($result as $row) {
 			$content .= 
 			"<div class=\"goopro_product\">\n
-			<h4><a href=\"$row->link\">$row->title</a></h4>\n
+			<a href=\"$row->link\"><h4>$row->title</h4>\n
 			<img src=\"$row->image_link\" alt=\"\"/>\n
-			<span class=\"price\">$currency$row->price</span>\n
+			<span class=\"price\">$currency$row->price</span></a>\n
 			</div>\n";
 		}
 		
