@@ -82,8 +82,9 @@ endif;
 		<h4>General settings</h4>
 		<ul>
 			<li>
-				<label for="goopro_brandname">Brand name:</label>
+				<label for="goopro_brandname">Search for brand + type: </label>
 				<input type="text" name="goopro_brandname" id="goopro_brandname" value="<?php echo $goopro_brandname?>" />
+				(e.g. Alpinestars, DC Shoe, Fox white tee)
 			</li>
 			<li>
 				<label for="goopro_number">Number of products:</label>
