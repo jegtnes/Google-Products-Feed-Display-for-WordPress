@@ -84,11 +84,12 @@ endif;
 			<li>
 				<label for="goopro_brandname">Search for brand + type: </label>
 				<input type="text" name="goopro_brandname" id="goopro_brandname" value="<?php echo $goopro_brandname?>" />
-				(e.g. Alpinestars, DC Shoe, Fox white tee)
+				<span class="extrainfo">(e.g. Alpinestars, DC Shoe, Fox white tee)</span>
 			</li>
 			<li>
 				<label for="goopro_number">Number of products:</label>
 				<input type="text" name="goopro_number" id="goopro_brandnumber" value="<?php echo $goopro_number?>"/>
+				<span class="extrainfo">How many products to display (widget can override this, page doesn't)</span>
 			</li>
 			<li>
 				<label for="goopro_currency">Currency:</label>
@@ -108,6 +109,7 @@ endif;
 			<li>
 				<label for="goopro_feedurl">Feed URL</label>
 				<input type="text" name="goopro_feedurl" id="goopro_feedurl" value="<?php echo $goopro_feedurl?>"/>
+				<span class="extrainfo">The URL to the Google Products XML feed.</span>
 			</li>
 		</ul>
 		
@@ -130,6 +132,7 @@ endif;
 					} 
 				?>
 				</select>
+				<span class="extrainfo">How often to make a page load trigger a refresh of the Google Products feed.</span>
 			</li>
 		</ul>
 		<p class="submit">  
